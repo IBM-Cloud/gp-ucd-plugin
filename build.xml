@@ -1,0 +1,45 @@
+<!-- /** * © Copyright IBM Corporation 2015. * This is licensed under the 
+	following license. * The Eclipse Public 1.0 License (http://www.eclipse.org/legal/epl-v10.html) 
+	* U.S. Government Users Restricted Rights: Use, duplication or disclosure 
+	restricted by GSA ADP Schedule Contract with IBM Corp. */ -->
+
+<project name="com.ibm.bluemix.plugin.globalizationv2" default="main"
+	basedir=".">
+	<!-- assumes the build.properties is set via the command line ANT invocation -->
+	<property name="build.properties" value="build.properties" />
+
+	<property name="project" value="" />
+
+	<!-- see plugin.xml where the pluginName is also referenced multiple times -->
+	<property name="pluginName" value="com.ibm.bluemix.plugin.globalization" />
+
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="bin.dir" value="${build.dir}/bin" />
+	<property name="zipOutputPath" value="${build.dir}/releases/${pluginName}.zip" />
+
+	<target name="main" depends="clean, buildZip" />
+
+
+	<!-- Build the actual zip file that gets uploaded to uDeploy -->
+	<target name="buildZip">
+		<zip destfile="${zipOutputPath}">			
+			<fileset dir=".">
+				<include name="src/**"/>
+				<include name="lib/**"/>				
+				<include name="globalization_check.py"/>
+				<include name="info.xml"/>
+				<include name="plugin.xml"/>
+				<include name="translate_me.sh"/>
+				<include name="_init.sh"/>
+			</fileset>
+		</zip>	
+	</target>
+
+
+	<!-- Clean up the build directory -->
+	<target name="clean">
+		<delete dir="build" />
+		<mkdir dir="build" />
+	</target>
+
+</project>

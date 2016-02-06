@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.urbancode.com/PluginXMLSchema_v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <header>
+    <!-- To update plugin.xml in place, this version must be incremented.  This is not the version displayed to the user -->
+    <identifier id="com.ibm.bluemix.plugin.globalizationv2" name="IBM Globalization Pipeline Plugin V2" version="1"/>
+    <description>The Bluemix Globalization Plugin allows users to use the Globalization app from Bluemix.</description>
+    <tag>Utilities/BluemixV2</tag>
+  </header>
+  <step-type name="SetupBluemixV2">
+    <description>Setup Bluemix.</description>
+    <properties>
+      <property name='sBluemixUserId' required='true'>
+        <property-ui label='Bluemix UserID' description='Bluemix UserID to login to cf' type='textBox' />
+      </property>
+      <property name='sBluemixPassword' required='true'>
+        <property-ui label='Bluemix Password' description='For security, this should be setup using a secure property' type='secureBox' />
+      </property>
+      <property name='sBluemixSpace' required='true'>
+        <property-ui label='Bluemix Space' description='Bluemix Space to login to cf' type='textBox' />
+      </property>
+      <property name='sBluemixOrg' required='true'>
+        <property-ui label='Bluemix Org' description='Bluemix Organization to login to cf' type='textBox' />
+      </property>
+      <property name='sBluemixAPI' required='true'>
+        <property-ui label='Bluemix API Endpoint' description='Bluemix API Endpoint' type='textBox' />
+      </property>
+    </properties>
+    <post-processing><![CDATA[
+properties.put("Status", properties.get("exitCode") == 0 ? "Success" : "Failure");
+]]></post-processing>
+    <command program='${GROOVY_HOME}/bin/groovy'>
+      <arg value='-cp' />
+      <arg path='src' />
+      <arg file='src/com/ibm/bluemix/plugin/globalization/GlobalizationStepsShell.groovy' />
+      <arg value='SetupBluemix' />
+      <arg file='${PLUGIN_INPUT_PROPS}' />
+      <arg file='${PLUGIN_OUTPUT_PROPS}' />
+    </command>
+  </step-type>
+  <step-type name="TranslateV2">
+    <description>Translate command.</description>
+    <properties>
+      <property name='sJobType' required='true'>
+        <property-ui label='Job Type' description='CREATE' type='textBox' default-value='CREATE' />
+      </property>
+      <property name='sInputPattern' required='false'>
+        <property-ui label='Input Pattern' description='Input Pattern' type='textBox' />
+      </property>
+      <property name='sSourFolder' required='false'>
+        <property-ui label='Source Folder' description='Default is working folder' type='textBox' />
+      </property>
+      <property name='sDownload' required='false'>
+        <property-ui label='Download translation' description='Download translation' type='checkBox' default-value='false' />
+      </property>
+    </properties>
+    <post-processing><![CDATA[
+properties.put("Status", properties.get("exitCode") == 0 ? "Success" : "Failure");
+]]></post-processing>
+    <command program='${GROOVY_HOME}/bin/groovy'>
+      <arg value='-cp' />
+      <arg path='src' />
+      <arg file='src/com/ibm/bluemix/plugin/globalization/GlobalizationStepsShell.groovy' />
+      <arg value='Translate' />
+      <arg file='${PLUGIN_INPUT_PROPS}' />
+      <arg file='${PLUGIN_OUTPUT_PROPS}' />
+    </command>
+  </step-type>
+</plugin>
