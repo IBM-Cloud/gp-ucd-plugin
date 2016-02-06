@@ -27,6 +27,9 @@ IBM Globalization Pipeline Service Plug-in for UrbanCode Deploy
 
 IBM [Globalization Pipeline](https://www.ng.bluemix.net/docs/#services/GlobalizationPipeline/index.html#globalization) plugin for UrbanCode Deploy is a component for you to integrate machine translation into your build and deploy process. It provides real time machine translation for your English resource files, and allows you to integrate the translation using static or dynamic methods. 
 
+## Download
+
+Binary downloads are available here: [releases](https://github.com/IBM-Bluemix/gp-ucd-plugin/releases)
 
 ## Installation
 
