@@ -43,7 +43,7 @@ The IBM Globalization Pipeline plug-in for UrbanCode Deploy contains two process
 #### Description
 
 This process is for configuring your Bluemix account parameters.  When configured, the Globalization Pipeline plug-in will search your Bluemix account in the organization and space that you specify for any instances of the Globalization Pipeline service.  If the Globalization Pipeline service is not found, an instance of the service will be created automatically. 
-If an instance is found that contains *UCD* in its name, that service instance will be given priority.
+If an instance is found that contains `UCD` in its name, that service instance will be given priority.
 
 #### Parameters
 
