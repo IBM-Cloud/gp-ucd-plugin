@@ -1,7 +1,6 @@
 
-IBM Globalization Pipeline Service Plug-in for UrbanCode Deploy
+IBM Globalization Pipeline plug-in for UrbanCode Deploy
 ===
-
 
 
 <!--
@@ -25,7 +24,7 @@ IBM Globalization Pipeline Service Plug-in for UrbanCode Deploy
 
 ## What is this?
 
-IBM [Globalization Pipeline](https://www.ng.bluemix.net/docs/#services/GlobalizationPipeline/index.html#globalization) plugin for UrbanCode Deploy is a component for you to integrate machine translation into your build and deploy process. It provides real time machine translation for your English resource files, and allows you to integrate the translation using static or dynamic methods. 
+IBM [Globalization Pipeline](https://www.ng.bluemix.net/docs/#services/GlobalizationPipeline/index.html#globalization) is an IBM Bluemix service that provides rapid machine translation for application developers.  The IBM Globalization Pipeline plug-in for UrbanCode Deploy integrates this service as an UrbanCode Deploy component that provides machine translation within your existing build and deploy process.  Using your English resource files as input, the service provides real-time machine translation for the following languages: Simplified Chinese, Traditional Chinese, French, German, Italian, Japanese, Korean, Portuguese, Spanish, and Arabic.  The machine translation output can be leveraged by invoking the [RESTful API](https://gp-beta-rest.ng.bluemix.net/translate/swagger/index.html) or downloading the translations.
 
 ## Download
 
@@ -33,45 +32,46 @@ Binary downloads are available here: [releases](https://github.com/IBM-Bluemix/g
 
 ## Installation
 
-No special steps are required for installation. See [Installing plug-ins in UrbanCode Deploy](https://developer.ibm.com/urbancode/docs/installing-plugins-ucd/).
+See [Installing plug-ins in UrbanCode Deploy](https://developer.ibm.com/urbancode/docs/installing-plugins-ucd/) and follow the steps for installing an automation plug-in.
 
 ## Usage
 
-### SetupBluemix 
+The IBM Globalization Pipeline plug-in for UrbanCode Deploy contains two processes that need to be configured.
+
+### SetupBluemixV2
 
 #### Description
 
-This step will look for the Globalization Pipeline service instance in your space and will create one if none existing. 
-Tf existing many instances already, the instance contains UCD in its name will take prior priority.
+This process is for configuring your Bluemix account parameters.  When configured, the Globalization Pipeline plug-in will search your Bluemix account in the organization and space that you specify for any instances of the Globalization Pipeline service.  If the Globalization Pipeline service is not found, an instance of the service will be created automatically. 
+If an instance is found that contains *UCD* in its name, that service instance will be given priority.
 
 #### Parameters
 
-Fill in the * fileds according to the Bluemix page
+Required fields are denoted by an * on the UrbanCode Deploy properties configuration page:
 
-* **Name** could be any name you like.
-* **Bluemix UserID** is the login id of the Bluemix page.
-* **Bluemix Password** is the login password of the Bluemix page.
-* **Bluemix Space** is the space of the Bluemix page.
-* **Bluemix Org** is the org of the Bluemix page.
-* **Bluemix API Endpoint** is the url of bluemix API endpoint.  
-   For eg: *https://api.stage1.ng.bluemix.net*
+* **Name** A unique name for the service.
+* **Bluemix UserID** The Bluemix ID for your account.
+* **Bluemix Password** The Bluemix password for your account.
+* **Bluemix Space** The space where you would like to create the Globalization Pipeline service instance.
+* **Bluemix Org** The organization where you would like to create the Globalization Pipeline service instance.
+* **Bluemix API Endpoint** The URL of a Bluemix API endpoint.  
+   For example: *https://api.stage1.ng.bluemix.net*
 
-### Translate 
+### TranslateV2
 
 #### Description
 
-This step will manage for the process of translating which may contain *create bundle*, *upload source file*, *download translated files*(optional).  
-The bundle name has max 30 characters and is the same with the source file(May contain sub folder name if the source file in the sub folder of the specified source folder).
+This process is for configuring the parameters that will be used to translate your resource files.  With the Globalization Pipeline plug-in for UrbanCode Deploy, you can create bundles, upload source files, and download translated files.
 
 #### Parameters
 
-* **Job Type** can only be **CREATE** currently.
-* **Input pattern** is the expression to match the source files.  
-   For eg: **_en.properties*, this will match all the files ending with _en.properties.
-* **Source folder** is to define the folder of source files.   
-   If not specified it will search in working folder as default.
-* **Download translation** default is unchosen.  
-   If chosen, it will download translated files to the source file folder.
+* **Job Type** is the job that will be run.  
+   `CREATE` is currently the only supported job type.
+* **Input pattern** is the expression that is used to identify the source files to be translated.  
+   For example: `*_en.properties` will match all files that end with `_en.properties`.
+* **Source folder** is used to define the folder where source files can be found.   
+   If not specified, the working folder will be selected by default.
+* **Download translation** Select this option to download the translations to the source folder that is specified.
 
 ## History
 
@@ -79,20 +79,15 @@ Version 1
 
 The following features are included in the initial beta release of the plug-in:
 
-* Automatically request the translation during the deployment
-* Retrieve the translation on the fly without managing the resource files
-* Easily add a new language without build or deployment
+* Automatically request translation during the deployment
+* Retrieve translations in real time without managing the resource files
+* Easily add new languages without having to build or deploy
 
 
 Support
 ===
-You can post questions about using this service in the developerWorks Answers site
+
+Any questions about the use of this service can be posted to the developerWorks Answers site
 using the tag "[Globalization](https://developer.ibm.com/answers/topics/globalization/)".
 
-This plugin is based on [Globalization Java Client](https://github.com/IBM-Bluemix/gp-java-client) which is a recommended integration method with IBM [Globalization Pipeline](https://www.ng.bluemix.net/docs/#services/GlobalizationPipeline/index.html#globalization)
-
-
-
-
-
-
+This plug-in is based on the [Globalization Pipeline Java Client](https://github.com/IBM-Bluemix/gp-java-client) which is a recommended integration method for the IBM [Globalization Pipeline](https://www.ng.bluemix.net/docs/#services/GlobalizationPipeline/index.html#globalization) service.
