@@ -27,7 +27,7 @@ export no_color='\e[0m'
 # Languages    #
 ################
 export lang_en='en'
-export lang_all='en,de,es,fr,it,ja,pt-BR,zh-Hans,zh-Hant,ko'
+export lang_all='en'
 
 usage()
 {
@@ -55,6 +55,18 @@ print_limitations() {
     echo "  - desire all languages translated"
     echo "  - translated files will be placed in the same directory as the source file"
 }
+
+get_service_all_langs(){
+	echo "get_service_all_langs begin"
+	targetlangs=$(java -cp "$GP_LIB/*" com.ibm.g11n.pipeline.tools.cli.GPCmd list-mt-languages -f en -i ${GP_INSTANCE_ID} -s ${GP_ENDPOINT} -u ${GP_USER_ID}  -p ${GP_PASSWORD})
+	#targetlangs=$(java -cp "$GP_LIB/*" com.ibm.g11n.pipeline.tools.cli.GPCmd list-mt-languages -f en -i 3344f77d40712d17c1bd144ef3e6f317 -s https://gp-rest.stage1.ng.bluemix.net/translate/rest -u 3344f77d40712d17c1bd144ef3e6f61c  -p iV6bXrcPfKAepzz8pkL2DNLqZrH8+WWl)
+    targetlangs=${targetlangs//\"/}
+	targetlangs=${targetlangs/\[/en,}
+	targetlangs=${targetlangs/\]/}
+	echo ${targetlangs}
+	export lang_all="$targetlangs"
+}
+
 
 wait_for_translation(){
     local bundle_id=$1
@@ -364,14 +376,18 @@ create_project_download_files(){
 ########################
 # Process arguments    #
 ########################
-while getopts "s:p:r:f:l:hd" OPTION
+while getopts "s:r:f:l:n:u:d:p:i:hd" OPTION
 do
     case $OPTION in
         s) export INPUT_PATTERN=$OPTARG; echo "set INPUT_PATTERN to ${OPTARG}";;
-        p) export BUNDLE_NAME=$OPTARG; echo "set BUNDLE_NAME to ${OPTARG}";;
         r) export JOB_TYPE=$OPTARG; echo "set JOB_TYPE to ${OPTARG}";;
         f) export SOUR_FOLDER=$OPTARG; echo "set SOUR_FOLDER to ${OPTARG}";;
         l) export DOWNLOAD=$OPTARG; echo "set DOWNLOAD to ${OPTARG}";;
+		n) export NOTARGETLAN=$OPTARG; echo "set NOTARGETLAN to ${OPTARG}";;
+		u) export GP_ENDPOINT=$OPTARG; echo "set GP_ENDPOINT to ${OPTARG}";;
+		d) export GP_USER_ID=$OPTARG; echo "set GP_USER_ID to ${OPTARG}";;
+		p) export GP_PASSWORD=$OPTARG; echo "set GP_PASSWORD to ${OPTARG}";;
+		i) export GP_INSTANCE_ID=$OPTARG; echo "set GP_INSTANCE_ID to ${OPTARG}";;
         h) usage; exit 1;;
         d) usage; export DEBUG=1;;
         ?) 
@@ -386,31 +402,29 @@ print_limitations
 ###################
 # Check inputs    #
 ###################
-. ./setenv_globalization.sh
 if [ -z $JOB_TYPE ]; then 
     export JOB_TYPE="CREATE"    
 fi 
 
-#if [ -z $GP_ENDPOINT ]; then 
-    export GP_ENDPOINT="https://gp-dev-rest.stage1.mybluemix.net/translate/rest"
-
-#fi 
+if [ -z $GP_ENDPOINT ]; then 
+    echo -e "${red}GP_ENDPOINT for Globalization Service must be set in the environment${no_color}"
+    exit 1
+fi 
 if [ -z $GP_INSTANCE_ID ]; then 
     echo -e "${red}INSTANCE ID for Globalization Service must be set in the environment${no_color}"
     exit 1
 fi 
-#if [ -z $GP_USER_ID ]; then 
-#    export GP_USER_ID=""
-#fi 
-#if [ -z $GP_PASSWORD ]; then 
-#    export GP_PASSWORD=""
-#fi 
-#if [ -z $BUNDLE_NAME ]; then 
-#    echo -e "${yellow}No project prefix set${no_color}"
-#fi 
+if [ -z $GP_USER_ID ]; then 
+    echo -e "${red}GP_USER_ID for Globalization Service must be set in the environment${no_color}"
+    exit 1
+fi 
+if [ -z $GP_PASSWORD ]; then 
+    echo -e "${red}GP_PASSWORD for Globalization Service must be set in the environment${no_color}"
+    exit 1
+fi 
 
 if [ -z $GP_LIB ]; then 
-    lib_guess=$(find `pwd` -name gp-cli-*)
+    lib_guess=$(find `pwd` -name gp-cli*)
     lib_directory="${lib_guess%/*}"
     if [ -d "${lib_directory}" ]; then 
         export GP_LIB="${lib_directory}" 
@@ -426,6 +440,14 @@ else
     echo "${INPUT_PATTERN} is the source file pattern"
 fi 
 
+
+if [ -z $NOTARGETLAN ]; then 
+    export NOTARGETLAN="true"
+fi 
+
+if [ "${NOTARGETLAN}" == "false" ]; then
+    get_service_all_langs
+fi
 
 if [ "${JOB_TYPE}" == "UPDATE" ]; then 
     echo "----------------------------------------------------"
@@ -455,27 +477,6 @@ else
     exit 1
 fi 
 
-
-# attempt to find dashboard
-#export GP_DASHBOARD=$(cf service "IBM Globalization" | grep Dashboard | awk '{print $2}')
-#debugme cf services
-#debugme cf service "IBM Globalization"
-#if [ -z "$GP_DASHBOARD" ]; then 
-#    cf services
-#    cf service "IBM Globalization"
-#    echo "Using latest cf CLI"
-#    export GP_DASHBOARD=$(${EXT_DIR}/bin/cf service "IBM Globalization" | grep Dashboard | awk '{print $2}')
-#    debugme ${EXT_DIR}/bin/cf services
-#    debugme ${EXT_DIR}/bin/cf service "IBM Globalization"
-
-#    if [ -z "$GP_DASHBOARD" ]; then 
-#        echo -e "${red}Could not locate dashboard for service IBM Globalization${no_color}"
-#        export GP_DASHBOARD="unknown, please locate the service in your IBM Bluemix dashboard"
-#    fi 
-#else
-#    debugme echo "found GP_DASHBOARD :${GP_DASHBOARD}"
-#fi 
-
 if [ $result -eq 0 ]; then
     echo -e "${label_color}All source files have been placed in the archive of this build, and can be used by additional stages${no_color}"
     echo -e "${label_color}All translated files have been put in the same directory as the original source files${no_color}"
@@ -490,3 +491,4 @@ else
 fi 
 echo 
 #echo -e "The Globalization Dashboard for this organization and space is located at ${green} ${GP_DASHBOARD} ${no_color}"
+
