@@ -31,7 +31,7 @@ class GlobalizationStepsShell{
 	 * @param args
 	 * @return
 	 */
-	static main(String[] args) {
+	static main(String[] args) {	
 		System.out.println(args.length);
 		if (args == null || args.length < 3)
 		{
@@ -47,9 +47,6 @@ class GlobalizationStepsShell{
 		System.out.println("Running \""+args[0]+"\":")
 		int returnCode = 0
 		switch (args[0]) {
-			case "SetupBluemix":
-				returnCode = SetupBluemix(properties)
-				break
 			case "Translate":
 				returnCode = Translate(properties)
 				break
@@ -66,33 +63,20 @@ class GlobalizationStepsShell{
 		
 	}
 	
-	static int SetupBluemix(Properties inputProperties) {
-		String bluemixUserId = inputProperties.getProperty("sBluemixUserId", "")
-		String bluemixPassword = inputProperties.getProperty("sBluemixPassword", "")
-		String bluemixAPI = inputProperties.getProperty("sBluemixAPI", "")
-		String bluemixSpace = inputProperties.getProperty("sBluemixSpace", "")
-		String bluemixOrg = inputProperties.getProperty("sBluemixOrg", "")
-				
-		List<String> command =["bash", "./_init.sh", "-a", bluemixAPI, "-u", bluemixUserId, "-p", bluemixPassword, "-s", bluemixSpace, "-o", bluemixOrg]	
-		List<String> rst = new ArrayList<String>()
-		int retcode = executeCommand(rst, command)
-		for(String item : rst) {
-			System.out.println(item)
-		}
-		
-		if (retcode != 0)
-		{
-			System.out.println("Error _init.sh")
-			return retcode
-		}
-		return 0
-	}
-	
 	static int Translate(Properties inputProperties) {
 		String jobType = inputProperties.getProperty("sJobType", "CREATE")
 		String inputPattern = inputProperties.getProperty("sInputPattern", "")
 		String sourceFolder = inputProperties.getProperty("sSourFolder", "")
 		String download = inputProperties.getProperty("sDownload", "false")
+		String noTarget = inputProperties.getProperty("sNOTARGETLAN", "true")
+		String credentials = inputProperties.getProperty("sCredential", "")
+		
+		if(credentials == null || credentials.empty || credentials.trim().empty) return 1
+		credentials = credentials.trim()
+		if(!credentials.startsWith("{")) { 
+			credentials = "{" + credentials + "}"
+		}
+		
 		if(sourceFolder == null || sourceFolder.empty) sourceFolder = new File(".").getCanonicalPath()
 		
 		List<String> translate = ["bash", "./translate_me.sh"]
@@ -111,6 +95,34 @@ class GlobalizationStepsShell{
 		if (download != null && !download.empty) {
 			translate <<= "-l"
 			translate <<= download
+		}
+		if (noTarget != null && !noTarget.empty) {
+			translate <<= "-n"
+			translate <<= noTarget
+		}
+			
+		//sCredential
+		def slurper = new groovy.json.JsonSlurper();
+		def credential = slurper.parseText(credentials);
+		System.out.println(credential.credentials.url);
+		if (credential.credentials.url != null && !credential.credentials.url.empty) {
+			translate <<= "-u"
+			translate <<= credential.credentials.url
+		}
+		System.out.println(credential.credentials.userId);
+		if (credential.credentials.userId != null && !credential.credentials.userId.empty) {
+			translate <<= "-d"
+			translate <<= credential.credentials.userId
+		}
+		System.out.println(credential.credentials.password);
+		if (credential.credentials.password != null && !credential.credentials.password.empty) {
+			translate <<= "-p"
+			translate <<= credential.credentials.password
+		}
+		System.out.println(credential.credentials.instanceId);
+		if (credential.credentials.instanceId != null && !credential.credentials.instanceId.empty) {
+			translate <<= "-i"
+			translate <<= credential.credentials.instanceId
 		}
 		
 		int retcode = executeCommand(rst, translate)
