@@ -6,37 +6,6 @@
     <description>The Bluemix Globalization Plugin allows users to use the Globalization app from Bluemix.</description>
     <tag>Utilities/BluemixV2</tag>
   </header>
-  <step-type name="SetupBluemixV2">
-    <description>Setup Bluemix.</description>
-    <properties>
-      <property name='sBluemixUserId' required='true'>
-        <property-ui label='Bluemix UserID' description='Bluemix UserID to login to cf' type='textBox' />
-      </property>
-      <property name='sBluemixPassword' required='true'>
-        <property-ui label='Bluemix Password' description='For security, this should be setup using a secure property' type='secureBox' />
-      </property>
-      <property name='sBluemixSpace' required='true'>
-        <property-ui label='Bluemix Space' description='Bluemix Space to login to cf' type='textBox' />
-      </property>
-      <property name='sBluemixOrg' required='true'>
-        <property-ui label='Bluemix Org' description='Bluemix Organization to login to cf' type='textBox' />
-      </property>
-      <property name='sBluemixAPI' required='true'>
-        <property-ui label='Bluemix API Endpoint' description='Bluemix API Endpoint' type='textBox' />
-      </property>
-    </properties>
-    <post-processing><![CDATA[
-properties.put("Status", properties.get("exitCode") == 0 ? "Success" : "Failure");
-]]></post-processing>
-    <command program='${GROOVY_HOME}/bin/groovy'>
-      <arg value='-cp' />
-      <arg path='src' />
-      <arg file='src/com/ibm/bluemix/plugin/globalization/GlobalizationStepsShell.groovy' />
-      <arg value='SetupBluemix' />
-      <arg file='${PLUGIN_INPUT_PROPS}' />
-      <arg file='${PLUGIN_OUTPUT_PROPS}' />
-    </command>
-  </step-type>
   <step-type name="TranslateV2">
     <description>Translate command.</description>
     <properties>
@@ -51,6 +20,19 @@ properties.put("Status", properties.get("exitCode") == 0 ? "Success" : "Failure"
       </property>
       <property name='sDownload' required='false'>
         <property-ui label='Download translation' description='Download translation' type='checkBox' default-value='false' />
+      </property>
+      
+      <property name="sNOTARGETLAN" required="true">
+  			<property-ui type="selectBox"
+    			default-value="true"
+    			description=""
+    			label="Target languages"/>
+  			<value label="Select languages in service dashboard">true</value>
+  			<value label="Translate into all languages">false</value>
+	  </property>
+	  <property name='sCredential' required='true'>
+        <property-ui label='Bluemix credential' 
+        description='Globalization Pipeline service credential, eg: {"credentials": { "url": "*", "userId": "*","password": "*", "instanceId": "*" }}' type='textAreaBox' />
       </property>
     </properties>
     <post-processing><![CDATA[
