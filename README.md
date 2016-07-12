@@ -40,24 +40,6 @@ See [Installing plug-ins in UrbanCode Deploy](https://developer.ibm.com/urbancod
 
 The IBM Globalization Pipeline plug-in for UrbanCode Deploy contains two processes that need to be configured.
 
-### SetupBluemixV2
-
-#### Description
-
-This process is for configuring your Bluemix account parameters.  When configured, the Globalization Pipeline plug-in will search your Bluemix account in the organization and space that you specify for any instances of the Globalization Pipeline service.  If the Globalization Pipeline service is not found, an instance of the service will be created automatically. 
-If an instance is found that contains `UCD` in its name, that service instance will be given priority.
-
-#### Parameters
-
-Required fields are denoted by an * on the UrbanCode Deploy properties configuration page:
-
-* **Name** A unique name for the service.
-* **Bluemix UserID** The Bluemix ID for your account.
-* **Bluemix Password** The Bluemix password for your account.
-* **Bluemix Space** The space where you would like to create the Globalization Pipeline service instance.
-* **Bluemix Org** The organization where you would like to create the Globalization Pipeline service instance.
-* **Bluemix API Endpoint** The URL of a Bluemix API endpoint.  
-   For example: *https://api.stage1.ng.bluemix.net*
 
 ### TranslateV2
 
@@ -74,6 +56,16 @@ This process is for configuring the parameters that will be used to translate yo
 * **Source folder** is used to define the folder where source files can be found.   
    If not specified, the working folder will be selected by default.
 * **Download translation** Select this option to download the translations to the source folder that is specified.
+* **Target languages**
+  - select languages in service dashboard (Default option)
+  
+  	It will create the bundle without any language and user can go to the bluemix globalization pipeline dashboard to add target languages.
+  - translate into all languages 
+  
+  	It will call the bluemix globalization pipeline service API to get the available languages for the instance.
+* **Bluemix credential**
+
+    Globalization Pipeline service credential, eg: {"credentials": { "url": "\*", "userId": "\*","password": "\*", "instanceId": "\*" }}'
 
 ## History
 
