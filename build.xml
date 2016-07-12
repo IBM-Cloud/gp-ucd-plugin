@@ -26,11 +26,9 @@
 			<fileset dir=".">
 				<include name="src/**"/>
 				<include name="lib/**"/>				
-				<include name="globalization_check.py"/>
 				<include name="info.xml"/>
 				<include name="plugin.xml"/>
 				<include name="translate_me.sh"/>
-				<include name="_init.sh"/>
 			</fileset>
 		</zip>	
 	</target>
